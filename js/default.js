@@ -38,6 +38,7 @@
     var xSpeed = 6; //Used for the ball 
     var ySpeed = 6; //Used for the ball and the player paddle
     var winScore = '10'; //When the player or cpu hit this score the game is over
+    var hits = 0;
 
     //Calculate display scale factor
     var SCALE_X = 4;
@@ -279,6 +280,11 @@
     // The gameplay logic, moved to its own function to make it easier to read
     function playGame() {
 
+        if (hits % 10 == 1) {
+            xSpeed++;
+            ySpeed++;
+        }
+
         //Check for input
         stage.onMouseMove = movePaddle;
 
@@ -344,36 +350,44 @@
         ballBitmap.y >= cpuBitmap.y - ((cpuImage.height * SCALE_Y) * 0.5))) {
             xSpeed *= -1;
             createjs.Sound.play('hit');
+            hits++;
         }
 
         // Cpu Paddle 2 collision //
 
-        if (ballBitmap.x >= cpu2Bitmap.x - ((ballImage.width * SCALE_X) * 0.5) &&
+        if (ballBitmap.x >= cpu2Bitmap.x - ((cpu2Image.width * SCALE_X) * 0.5) &&
            (ballBitmap.y <= cpu2Bitmap.y + ((cpu2Image.height * SCALE_Y) * 0.5) &&
            ballBitmap.y >= cpu2Bitmap.y - ((cpu2Image.height * SCALE_Y) * 0.5))) {
             ySpeed *= -1;
             createjs.Sound.play('hit');
+            hits++;
         }
 
         // Player collision //
-        if (ballBitmap.x <= playerBitmap.x + ((ballImage.width * SCALE_X) * 0.5) &&
+        if (ballBitmap.x <= playerBitmap.x + ((playerImage.width * SCALE_X) * 0.5) &&
             (ballBitmap.y <= playerBitmap.y + ((playerImage.height * SCALE_Y) * 0.5) &&
             ballBitmap.y >= playerBitmap.y - ((playerImage.height * SCALE_Y) * 0.5))) {
             xSpeed *= -1;
             createjs.Sound.play('hit');
+            hits++;
         }
 
         // Player paddle 2 collision //
-        if (ballBitmap.x <= player2Bitmap.x + ((ballImage.width * SCALE_X) * 0.5) &&
-            (ballBitmap.y <= player2Bitmap.y + ((player2Image.height * SCALE_Y) * 0.5) &&
-            ballBitmap.y >= player2Bitmap.y - ((player2Image.height * SCALE_Y) * 0.5))) {
+        if (ballBitmap.x <= player2Bitmap.x + ((player2Image.width * SCALE_X) ) &&
+            ballBitmap.x >= player2Bitmap.x - ((player2Image.width * SCALE_X) /2) &&
+           // (ballBitmap.y <= player2Bitmap.y + ((player2Image.height * SCALE_Y) * 0.5) &&
+            ballBitmap.y >= player2Bitmap.y - ((player2Image.height * SCALE_Y)) ){
             ySpeed *= -1;
             createjs.Sound.play('hit');
+            hits++;
         }
 
         // Stop Paddle from going out of canvas //
         if (playerBitmap.y >= canvas.height - (playerImage.height * SCALE_Y)) {
             playerBitmap.y = canvas.height - (playerImage.height * SCALE_Y);
+        }
+        if (player2Bitmap.x >= canvas.width - (player2Image.width * SCALE_X)) {
+            player2Bitmap.x = canvas.width - (player2Image.width * SCALE_X);
         }
 
 
@@ -397,7 +411,10 @@
     }
 
     // Reset, this will set the paddle and ball to their starting place
-        function reset() {
+    function reset() {
+        hits = 0;
+        xSpeed = 6;
+        ySpeed = 6;
         
         stage.onMouseMove = null; // Clears movement input
 
