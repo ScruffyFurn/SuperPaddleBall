@@ -47,7 +47,10 @@
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <TargetPlatformVersion>8.0</TargetPlatformVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <PackageCertificateKeyFile>HTML5_Template_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>SuperPaddleBall_StoreKey.pfx</PackageCertificateKeyFile>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxPackageDir>C:\Users\Michael\Desktop\Microsoft\</AppxPackageDir>
+    <PackageCertificateThumbprint>A79BCADE315A1B478EC088FA7511D5EC918B0B5E</PackageCertificateThumbprint>
   </PropertyGroup>
   <ItemGroup>
     <AppxManifest Include="package.appxmanifest">
@@ -77,6 +80,9 @@
     <Content Include="images\storelogo.png" />
     <Content Include="js\default.js" />
     <Content Include="css\default.css" />
+    <None Include="SuperPaddleBall_StoreKey.pfx" />
+    <None Include="SuperPaddleBall_TemporaryKey.pfx" />
+    <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <ItemGroup>
     <SDKReference Include="Microsoft.WinJS.1.0, Version=1.0" />

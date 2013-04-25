@@ -34,11 +34,10 @@
     var title; //The games title
     var playerScore; //The main player score
     var cpuScore; //The CPU score
-    var cpuSpeed = 6; //The speed of the CPU paddle; the faster it is the harder the game is
+    var cpuSpeed = 4.1; //The speed of the CPU paddle; the faster it is the harder the game is
     var xSpeed = 6; //Used for the ball 
     var ySpeed = 6; //Used for the ball and the player paddle
     var winScore = '10'; //When the player or cpu hit this score the game is over
-    var hits = 0;
 
     //Calculate display scale factor
     var SCALE_X = 4;
@@ -138,6 +137,14 @@
         backgroundBitmap.scaleY = SCALE_Y;
         stage.addChild(backgroundBitmap); // Add Background to the Stage
 
+        // Game Title //
+        title = new createjs.Text("Super Paddle Ball", "30px sans-serif", "#757575");
+        title.scaleX = SCALE_X;
+        title.scaleY = SCALE_Y;
+        title.x = canvas.width * 0.5 - (title.getMeasuredWidth() * SCALE_X) * 0.5;
+        title.y = canvas.height * 0.5 - (title.getMeasuredHeight() * SCALE_Y) * 0.5;
+        stage.addChild(title); // Add the scores and title to the stage, you can add multiple children at once
+
         
         // Draw Player paddle
         playerImage = preload.getResult("player");
@@ -185,13 +192,13 @@
         stage.addChild(ballBitmap);
 
         // Scores //
-        playerScore = new createjs.Text('0', 'bold 20px Arial', '#cccccc'); // This is how we create text with createjs
+        playerScore = new createjs.Text('0', 'bold 20px Arial', '#D0CEDE'); // This is how we create text with createjs
         playerScore.scaleX = SCALE_X;
         playerScore.scaleY = SCALE_Y;
         playerScore.x = MARGIN;
         playerScore.y = MARGIN * SCALE_Y;
 
-        cpuScore = new createjs.Text('0', 'bold 20px Arial', '#cccccc');
+        cpuScore = new createjs.Text('0', 'bold 20px Arial', '#D0CEDE');
         cpuScore.scaleX = SCALE_X;
         cpuScore.scaleY = SCALE_Y;
         cpuScore.x = canvas.width - (cpuScore.getMeasuredWidth() * SCALE_X) - MARGIN;
@@ -200,16 +207,6 @@
         stage.addChild(playerScore, cpuScore);
         stage.update();
 
-        // Game Title //
-        title = new createjs.Text("HTML5 Pong!", "30px sans-serif", "#cccccc");
-        title.scaleX = SCALE_X;
-        title.scaleY = SCALE_Y;
-        title.x = canvas.width * 0.5 - (title.getMeasuredWidth() * SCALE_X) * 0.5;
-        title.y = (title.getMeasuredHeight() * SCALE_Y) * 0.5;
-
-
-        stage.addChild(playerScore, cpuScore, title); // Add the scores and title to the stage, you can add multiple children at once
-        stage.update(); // Update the stage
 
         startGame(); // Run our startGame function
     }
@@ -280,10 +277,6 @@
     // The gameplay logic, moved to its own function to make it easier to read
     function playGame() {
 
-        if (hits % 10 == 1) {
-            xSpeed++;
-            ySpeed++;
-        }
 
         //Check for input
         stage.onMouseMove = movePaddle;
@@ -350,17 +343,16 @@
         ballBitmap.y >= cpuBitmap.y - ((cpuImage.height * SCALE_Y) * 0.5))) {
             xSpeed *= -1;
             createjs.Sound.play('hit');
-            hits++;
         }
 
         // Cpu Paddle 2 collision //
 
-        if (ballBitmap.x >= cpu2Bitmap.x - ((cpu2Image.width * SCALE_X) * 0.5) &&
+        if (ballBitmap.x >= cpu2Bitmap.x - ((cpu2Image.width * SCALE_X) ) &&
+            ballBitmap.x <= cpu2Bitmap.x + ((cpu2Image.width * SCALE_X)) &&
            (ballBitmap.y <= cpu2Bitmap.y + ((cpu2Image.height * SCALE_Y) * 0.5) &&
            ballBitmap.y >= cpu2Bitmap.y - ((cpu2Image.height * SCALE_Y) * 0.5))) {
             ySpeed *= -1;
             createjs.Sound.play('hit');
-            hits++;
         }
 
         // Player collision //
@@ -369,7 +361,6 @@
             ballBitmap.y >= playerBitmap.y - ((playerImage.height * SCALE_Y) * 0.5))) {
             xSpeed *= -1;
             createjs.Sound.play('hit');
-            hits++;
         }
 
         // Player paddle 2 collision //
@@ -379,7 +370,6 @@
             ballBitmap.y >= player2Bitmap.y - ((player2Image.height * SCALE_Y)) ){
             ySpeed *= -1;
             createjs.Sound.play('hit');
-            hits++;
         }
 
         // Stop Paddle from going out of canvas //
@@ -412,10 +402,7 @@
 
     // Reset, this will set the paddle and ball to their starting place
     function reset() {
-        hits = 0;
-        xSpeed = 6;
-        ySpeed = 6;
-        
+                
         stage.onMouseMove = null; // Clears movement input
 
         playerBitmap.x = MARGIN + ((playerImage.width * SCALE_X) * 0.25);
