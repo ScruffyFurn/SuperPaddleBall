@@ -50,7 +50,7 @@
     <PackageCertificateKeyFile>SuperPaddleBall_StoreKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxPackageDir>C:\Users\Michael\Desktop\Microsoft\</AppxPackageDir>
-    <PackageCertificateThumbprint>A79BCADE315A1B478EC088FA7511D5EC918B0B5E</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>F0FBA449149D273978C29103C14BA0CFAADDFE8E</PackageCertificateThumbprint>
   </PropertyGroup>
   <ItemGroup>
     <AppxManifest Include="package.appxmanifest">
