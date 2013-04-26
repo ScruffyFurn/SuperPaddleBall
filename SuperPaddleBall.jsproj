@@ -65,10 +65,15 @@
     <Content Include="Assets\paddle2.png" />
     <Content Include="Assets\pause.png" />
     <Content Include="Assets\playerScore.mp3" />
+    <Content Include="Assets\slowDown.mp3" />
+    <Content Include="Assets\slowDown.png" />
+    <Content Include="Assets\speedUp.mp3" />
+    <Content Include="Assets\speedUp.png" />
     <Content Include="Assets\wall.mp3" />
     <Content Include="Assets\win.png" />
     <Content Include="CreateJS\easeljs-0.5.0.min.js" />
     <Content Include="CreateJS\movieclip-0.5.0.min.js" />
+    <Content Include="CreateJS\ndgmr.Collision.js" />
     <Content Include="CreateJS\preloadjs-0.3.0.min.js" />
     <Content Include="CreateJS\soundjs-0.4.0.min.js" />
     <Content Include="CreateJS\soundjs.flashplugin-0.3.0.min.js" />

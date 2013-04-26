@@ -347,5 +347,10 @@
     <MainPackageIdentityName>24335IrishMickey.Pick-O-Matic</MainPackageIdentityName>
     <MainPackageIdentityName>24335IrishMickey.Pong</MainPackageIdentityName>
   </AccountPackageIdentityNames>
-  <PackageInfoList LandingUrl="https://appdev.microsoft.com:443/StorePortals/Developer/Catalog/ReleaseAnchor/2aa0aa59-d228-4abe-8fd4-4695dc3fd30a" />
+  <PackageInfoList LandingUrl="https://appdev.microsoft.com:443/StorePortals/Developer/Catalog/ReleaseAnchor/2aa0aa59-d228-4abe-8fd4-4695dc3fd30a">
+    <PackageInfo>
+      <PackageArchitecture>neutral</PackageArchitecture>
+      <PackageMaxArchitectureVersion>1.0.0.1</PackageMaxArchitectureVersion>
+    </PackageInfo>
+  </PackageInfoList>
 </StoreAssociation>

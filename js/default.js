@@ -29,6 +29,7 @@
     var winImage, winBitmap; //The winning popup
     var loseImage, loseBitmap; //The losing popup
     var pausedImage, pausedBitmap; //The Image we show when paused
+    var speedUpImage, speedDownImage, speedUpBitmap, speedDownBitmap; //power up images
 
     // Variables //
     var title; //The games title
@@ -38,6 +39,9 @@
     var xSpeed = 6; //Used for the ball 
     var ySpeed = 6; //Used for the ball and the player paddle
     var winScore = '10'; //When the player or cpu hit this score the game is over
+
+    var hits;
+    var powerUpAvail = true;
 
     //Calculate display scale factor
     var SCALE_X = 4;
@@ -93,11 +97,15 @@
                             { src: "Assets/ball.png", id: "ball" },
                             { src: "Assets/win.png", id: "win" },
                             { src: "Assets/lose.png", id: "lose" },
+                            { src: "Assets/speedUp.png", id: "speedUp" },
+                            { src: "Assets/slowDown.png", id: "speedDown" },
                             //Sounds
                             { src: "Assets/playerScore.mp3", id: "playerScore" },
                             { src: "Assets/enemyScore.mp3", id: "enemyScore" },
                             { src: "Assets/hit.mp3", id: "hit" },
-                            { src: "Assets/wall.mp3", id: "wall" }
+                            { src: "Assets/wall.mp3", id: "wall" },
+                            { src: "Assets/speedUp.mp3", id: "speedUpSound" },
+                            { src: "Assets/slowDown.mp3", id: "slowDownSound" }
         ]);
         preload.addEventListener("complete", prepareGame);
 
@@ -113,6 +121,8 @@
         // Set the current state to 'Start'
         currentGameState = gameStates.Start;
 
+        hits = 0;
+
         // Setup the win/lose and paused graphics
         // We will add them to the stage when needed
         winImage = preload.getResult("win"); // This is how we get the image from preloader
@@ -124,6 +134,16 @@
         loseBitmap = new createjs.Bitmap(loseImage);
         loseBitmap.scaleX = SCALE_X;
         loseBitmap.scaleY = SCALE_Y;
+
+        speedDownImage = preload.getResult("speedDown"); 
+        speedDownBitmap = new createjs.Bitmap(speedDownImage);
+        speedDownBitmap.scaleX = SCALE_X; 
+        speedDownBitmap.scaleY = SCALE_Y;
+
+        speedUpImage = preload.getResult("speedUp");
+        speedUpBitmap = new createjs.Bitmap(speedUpImage);
+        speedUpBitmap.scaleX = SCALE_X;
+        speedUpBitmap.scaleY = SCALE_Y;
 
         pausedImage = preload.getResult("paused");
         pausedBitmap = new createjs.Bitmap(pausedImage);
@@ -178,7 +198,7 @@
         cpu2Bitmap = new createjs.Bitmap(cpu2Image);
         cpu2Bitmap.scaleX = SCALE_X;
         cpu2Bitmap.scaleY = SCALE_Y;
-        cpu2Bitmap.x = (canvas.width * 0.5) - (cpu2Image.width);
+        cpu2Bitmap.x = (canvas.width * 0.5) + (cpu2Image.width);
         cpu2Bitmap.y = MARGIN - cpu2Image.height;
         stage.addChild(cpu2Bitmap);
 
@@ -277,7 +297,40 @@
     // The gameplay logic, moved to its own function to make it easier to read
     function playGame() {
 
+        if (hits > 1 && hits % 3 == 0 && powerUpAvail) {
 
+            var randomPower = Math.floor(Math.random() * 3);
+
+            switch (randomPower) {
+                case 1:
+                    var randomX = Math.floor(Math.random() * canvas.width);
+                    var randomY = Math.floor(Math.random() * canvas.height);
+                    speedUpBitmap.x = randomX;
+                    speedUpBitmap.y = randomY;
+                    stage.addChild(speedUpBitmap);
+                    powerUpAvail = false;
+                    hits = 0;
+                    break;
+                case 2:
+                    var randomX = Math.floor(Math.random() * canvas.width);
+                    var randomY = Math.floor(Math.random() * canvas.height);
+                    speedDownBitmap.x = randomX;
+                    speedDownBitmap.y = randomY;
+                    stage.addChild(speedDownBitmap);
+                    powerUpAvail = false;
+                    hits = 0;
+                    break;
+            }
+
+        }
+
+        if (hits > 1 && hits % 10 == 0 && !powerUpAvail) {
+            stage.removeChild(speedDownBitmap);
+            stage.removeChild(speedDownBitmap);
+            powerUpAvail = true;
+        }
+
+                
         //Check for input
         stage.onMouseMove = movePaddle;
 
@@ -290,9 +343,11 @@
 
         if (cpuBitmap.y < ballBitmap.y) {
             cpuBitmap.y = cpuBitmap.y + cpuSpeed;
+            
         }
         else if (cpuBitmap.y > ballBitmap.y) {
             cpuBitmap.y = cpuBitmap.y - cpuSpeed;
+            
         }
 
         if (cpu2Bitmap.x < ballBitmap.x) {
@@ -301,7 +356,7 @@
         else if (cpu2Bitmap.x > ballBitmap.x) {
             cpu2Bitmap.x = cpu2Bitmap.x - cpuSpeed;
         }
- 
+
         // Wall Collision //
         //Up
         if ((ballBitmap.y) < 0) {
@@ -336,42 +391,61 @@
             createjs.Sound.play('playerScore');
         }
 
-        // Cpu collision //
-       
-        if (ballBitmap.x >= cpuBitmap.x - ((ballImage.width * SCALE_X) * 0.5) &&
-        (ballBitmap.y <= cpuBitmap.y + ((cpuImage.height * SCALE_Y) * 0.5) &&
-        ballBitmap.y >= cpuBitmap.y - ((cpuImage.height * SCALE_Y) * 0.5))) {
+        var intersection = ndgmr.checkRectCollision(ballBitmap, cpuBitmap);
+        if (intersection) {
             xSpeed *= -1;
             createjs.Sound.play('hit');
+            hits++;
         }
 
-        // Cpu Paddle 2 collision //
-
-        if (ballBitmap.x >= cpu2Bitmap.x - ((cpu2Image.width * SCALE_X) ) &&
-            ballBitmap.x <= cpu2Bitmap.x + ((cpu2Image.width * SCALE_X)) &&
-           (ballBitmap.y <= cpu2Bitmap.y + ((cpu2Image.height * SCALE_Y) * 0.5) &&
-           ballBitmap.y >= cpu2Bitmap.y - ((cpu2Image.height * SCALE_Y) * 0.5))) {
+        intersection = ndgmr.checkRectCollision(ballBitmap, cpu2Bitmap);
+        if (intersection) {
             ySpeed *= -1;
             createjs.Sound.play('hit');
+            hits++;
         }
 
-        // Player collision //
-        if (ballBitmap.x <= playerBitmap.x + ((playerImage.width * SCALE_X) * 0.5) &&
-            (ballBitmap.y <= playerBitmap.y + ((playerImage.height * SCALE_Y) * 0.5) &&
-            ballBitmap.y >= playerBitmap.y - ((playerImage.height * SCALE_Y) * 0.5))) {
+        intersection = ndgmr.checkRectCollision(ballBitmap, playerBitmap);
+        if (intersection) {
             xSpeed *= -1;
             createjs.Sound.play('hit');
+            hits++;
         }
 
-        // Player paddle 2 collision //
-        if (ballBitmap.x <= player2Bitmap.x + ((player2Image.width * SCALE_X) ) &&
-            ballBitmap.x >= player2Bitmap.x - ((player2Image.width * SCALE_X) /2) &&
-           // (ballBitmap.y <= player2Bitmap.y + ((player2Image.height * SCALE_Y) * 0.5) &&
-            ballBitmap.y >= player2Bitmap.y - ((player2Image.height * SCALE_Y)) ){
+        intersection = ndgmr.checkRectCollision(ballBitmap, player2Bitmap);
+        if (intersection) {
             ySpeed *= -1;
             createjs.Sound.play('hit');
+            hits++;
         }
 
+        intersection = ndgmr.checkRectCollision(ballBitmap, speedUpBitmap);
+        if (intersection) {
+            
+            stage.removeChild(speedUpBitmap);
+            speedUpBitmap.x = -200;
+            speedUpBitmap.y = -900;
+            xSpeed *=2;
+            ySpeed *=2;
+            createjs.Sound.play('speedUpSound');
+            powerUpAvail = true;
+            hits = 0;
+        }
+
+        intersection = ndgmr.checkRectCollision(ballBitmap, speedDownBitmap);
+        if (intersection) {
+
+            stage.removeChild(speedDownBitmap);
+            speedDownBitmap.x = -200;
+            speedDownBitmap.y = -900;
+            xSpeed /=2;
+            ySpeed /=2;
+            createjs.Sound.play('slowDownSound');
+            powerUpAvail = true;
+            hits = 0;
+        }
+    
+      
         // Stop Paddle from going out of canvas //
         if (playerBitmap.y >= canvas.height - (playerImage.height * SCALE_Y)) {
             playerBitmap.y = canvas.height - (playerImage.height * SCALE_Y);
@@ -393,7 +467,7 @@
             display('lose');
         }
     }
-
+    
     function movePaddle(e) {
         // Player Movement
         playerBitmap.y = e.stageY;
@@ -403,6 +477,10 @@
     // Reset, this will set the paddle and ball to their starting place
     function reset() {
                 
+        hits = 0;
+        xSpeed = 6;
+        ySpeed = 6;
+
         stage.onMouseMove = null; // Clears movement input
 
         playerBitmap.x = MARGIN + ((playerImage.width * SCALE_X) * 0.25);
@@ -414,12 +492,13 @@
         cpuBitmap.x = (canvas.width - MARGIN) - (cpuImage.width * SCALE_X);
         cpuBitmap.y = (canvas.height * 0.5) - (cpuImage.height);
 
-        cpu2Bitmap.x = (canvas.width * 0.5) - (cpu2Image.width);
+        cpu2Bitmap.x = (canvas.width * 0.5) + (cpu2Image.width);
         cpu2Bitmap.y = MARGIN - cpu2Image.height;
 
         ballBitmap.x = (canvas.width * 0.5) - ((ballImage.width * 0.5) * SCALE_X); 
         ballBitmap.y = (canvas.height * 0.5) - ((ballImage.height * 0.5) * SCALE_Y); 
     }
+    
 
 
     // This function will display our overlays and clear them when needed
